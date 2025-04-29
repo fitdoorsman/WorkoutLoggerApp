@@ -2,109 +2,140 @@ package workoutlogger;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
-import java.time.LocalDate;
-
 public class WorkoutLoggerApp extends Application {
-
-    private final WorkoutLog workoutLog = new WorkoutLog();
-    private final ProgressTracker progressTracker = new ProgressTracker();
+    private WorkoutLog log = new WorkoutLog();
 
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Workout Logger");
 
-        // Input fields
-        TextField typeField = new TextField();
-        TextField durationField = new TextField();
-        TextField setsField = new TextField();
-        TextField repsField = new TextField();
-        TextField weightField = new TextField();
-        TextArea notesField = new TextArea();
+        // Labels and Input Fields
+        Label titleLabel = new Label("Daily Workout Entry");
+        titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-        typeField.setPrefWidth(250);
-        notesField.setPrefRowCount(3);
-        notesField.setWrapText(true);
+        Label typeLabel = new Label("Type:");
+        ComboBox<String> typeBox = new ComboBox<>();
+        typeBox.getItems().addAll("Cardio", "Strength", "Flexibility");
+
+        Label nameLabel = new Label("Exercise Name:");
+        TextField nameField = new TextField();
+
+        Label durationLabel = new Label("Duration (min):");
+        TextField durationField = new TextField();
+
+        Label setsLabel = new Label("Sets:");
+        TextField setsField = new TextField();
+
+        Label repsLabel = new Label("Reps:");
+        TextField repsField = new TextField();
+
+        Label weightLabel = new Label("Weight (lbs):");
+        TextField weightField = new TextField();
+
+        Label notesLabel = new Label("Notes:");
+        TextField notesField = new TextField();
 
         // Buttons
         Button logButton = new Button("Log Workout");
         Button viewProgressButton = new Button("View Progress");
-        Button clearOutputButton = new Button("Clear Output");
+        Button clearButton = new Button("Clear Output");
 
-        // Output area
         TextArea outputArea = new TextArea();
         outputArea.setEditable(false);
-        outputArea.setWrapText(true);
-        outputArea.setPrefHeight(160);
 
-        // Layout
+        // Layout: GridPane for Inputs
         GridPane inputGrid = new GridPane();
+        inputGrid.setAlignment(Pos.CENTER);
+        inputGrid.setPadding(new Insets(20));
         inputGrid.setHgap(10);
         inputGrid.setVgap(10);
 
-        inputGrid.add(new Label("Type:"), 0, 0);
-        inputGrid.add(typeField, 1, 0);
+        // Label Widths
+        typeLabel.setMinWidth(120);
+        nameLabel.setMinWidth(120);
+        durationLabel.setMinWidth(120);
+        setsLabel.setMinWidth(120);
+        repsLabel.setMinWidth(120);
+        weightLabel.setMinWidth(120);
+        notesLabel.setMinWidth(120);
 
-        inputGrid.add(new Label("Duration (min):"), 0, 1);
-        inputGrid.add(durationField, 1, 1);
+        // Add to Grid
+        inputGrid.add(typeLabel, 0, 0);
+        inputGrid.add(typeBox, 1, 0);
 
-        inputGrid.add(new Label("Sets:"), 0, 2);
-        inputGrid.add(setsField, 1, 2);
+        inputGrid.add(nameLabel, 0, 1);
+        inputGrid.add(nameField, 1, 1);
 
-        inputGrid.add(new Label("Reps:"), 0, 3);
-        inputGrid.add(repsField, 1, 3);
+        inputGrid.add(durationLabel, 0, 2);
+        inputGrid.add(durationField, 1, 2);
 
-        inputGrid.add(new Label("Weight (lbs):"), 0, 4);
-        inputGrid.add(weightField, 1, 4);
+        inputGrid.add(setsLabel, 0, 3);
+        inputGrid.add(setsField, 1, 3);
 
-        inputGrid.add(new Label("Notes:"), 0, 5);
-        inputGrid.add(notesField, 1, 5);
+        inputGrid.add(repsLabel, 0, 4);
+        inputGrid.add(repsField, 1, 4);
 
-        HBox buttonRow = new HBox(10, logButton, viewProgressButton, clearOutputButton);
-        VBox layout = new VBox(15, inputGrid, buttonRow, new Label("Logged Workouts & Progress:"), outputArea);
-        layout.setPadding(new Insets(20));
+        inputGrid.add(weightLabel, 0, 5);
+        inputGrid.add(weightField, 1, 5);
+
+        inputGrid.add(notesLabel, 0, 6);
+        inputGrid.add(notesField, 1, 6);
+
+        // Button Layout
+        HBox buttonBox = new HBox(10);
+        buttonBox.setAlignment(Pos.CENTER);
+        buttonBox.getChildren().addAll(logButton, viewProgressButton, clearButton);
+
+        // Main Layout
+        VBox mainLayout = new VBox(20);
+        mainLayout.setPadding(new Insets(20));
+        mainLayout.getChildren().addAll(titleLabel, inputGrid, buttonBox, outputArea);
 
         // Button Actions
         logButton.setOnAction(e -> {
             try {
                 Workout workout = new Workout();
-                workout.setType(typeField.getText());
+                workout.setType(typeBox.getValue());
+                workout.setName(nameField.getText());
                 workout.setDuration(Integer.parseInt(durationField.getText()));
                 workout.setSets(Integer.parseInt(setsField.getText()));
                 workout.setReps(Integer.parseInt(repsField.getText()));
                 workout.setWeight(Double.parseDouble(weightField.getText()));
                 workout.setNotes(notesField.getText());
+                workout.setDate(java.time.LocalDate.now());
 
-                workoutLog.addWorkout(workout);
-                progressTracker.updateProgress(workout.getDate());
+                log.addWorkout(workout);
+                outputArea.appendText("Workout logged: " + workout + "\n");
 
-                outputArea.appendText(workout.toString() + "\n");
-
-                typeField.clear();
+                // Clear fields after logging
+                typeBox.setValue(null);
+                nameField.clear();
                 durationField.clear();
                 setsField.clear();
                 repsField.clear();
                 weightField.clear();
                 notesField.clear();
             } catch (Exception ex) {
-                outputArea.appendText("Error: Please enter valid numbers for duration, sets, reps, and weight.\n\n");
+                outputArea.appendText("Error: Invalid input.\n");
             }
         });
 
         viewProgressButton.setOnAction(e -> {
-            String summary = progressTracker.getProgressSummary();
-            int totalDays = progressTracker.getDaysWorkedOut();
-            outputArea.appendText("Total Days Worked Out: " + totalDays + "\n" + summary + "\n");
+            outputArea.appendText("\nWeekly Progress:\n");
+            outputArea.appendText(log.getWeeklySummary() + "\n");
         });
 
-        clearOutputButton.setOnAction(e -> outputArea.clear());
+        clearButton.setOnAction(e -> outputArea.clear());
 
-        primaryStage.setScene(new Scene(layout, 620, 600));
-        primaryStage.setMinWidth(600);
+        // Set and Show Scene
+        Scene scene = new Scene(mainLayout, 500, 650); // Slightly taller to fit extra field
+        primaryStage.setScene(scene);
         primaryStage.show();
     }
 

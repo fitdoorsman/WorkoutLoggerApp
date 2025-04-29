@@ -5,6 +5,7 @@ import java.time.LocalDate;
 
 public class Workout implements Serializable {
     private String type;
+    private String name;     // NEW - Exercise Name
     private int duration;
     private LocalDate date;
     private int sets;
@@ -12,22 +13,12 @@ public class Workout implements Serializable {
     private double weight;
     private String notes;
 
-    public Workout() {
-        this.date = LocalDate.now();
-    }
-
-    public Workout(String type, int duration, LocalDate date, int sets, int reps, double weight, String notes) {
-        this.type = type;
-        this.duration = duration;
-        this.date = date != null ? date : LocalDate.now();
-        this.sets = sets;
-        this.reps = reps;
-        this.weight = weight;
-        this.notes = notes;
-    }
-
+    // Getters and Setters
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
     public int getDuration() { return duration; }
     public void setDuration(int duration) { this.duration = duration; }
@@ -50,10 +41,13 @@ public class Workout implements Serializable {
     @Override
     public String toString() {
         return String.format(
-                "Date: %s\nWorkout Type: %s\nDuration: %d min\nSets: %d\nReps: %d\nWeight: %.1f lbs\nNotes: %s\n",
-                date != null ? date.toString() : LocalDate.now(),
-                type != null ? type : "N/A",
-                duration, sets, reps, weight,
+                "Workout Type: %s | Name: %s | Duration: %d min | Sets: %d | Reps: %d | Weight: %.1f lbs | Notes: %s",
+                type,
+                (name == null || name.isEmpty()) ? "N/A" : name,
+                duration,
+                sets,
+                reps,
+                weight,
                 (notes == null || notes.isEmpty()) ? "N/A" : notes
         );
     }
