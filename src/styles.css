@@ -1,0 +1,47 @@
+.root {
+    -fx-background-color: #F9F9F9;
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+.title-label {
+    -fx-text-fill: #2E86C1;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.log-button {
+    -fx-background-color: #28B463; /* Green */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.progress-button {
+    -fx-background-color: #F39C12; /* Orange */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.clear-button {
+    -fx-background-color: #E74C3C; /* Red */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.log-button:hover {
+    -fx-background-color: #239B56;
+}
+
+.progress-button:hover {
+    -fx-background-color: #D68910;
+}
+
+.clear-button:hover {
+    -fx-background-color: #C0392B;
+}
+
+.text-area {
+    -fx-control-inner-background: #ffffff;
+    -fx-border-color: #BFC9CA;
+    -fx-border-radius: 5;
+    -fx-font-size: 13px;
+}
